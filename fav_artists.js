@@ -11,22 +11,16 @@ var db = pgp({
     password: config.password
 });
 
-var artistArray;
-
-db.query('SELECT * FROM artist')
-.then(function(result) {
-    pgp.end();
-    artistArray = result;
-})
-.catch(function rejected(err) {
-  console.log('error:', err.message);
-  pgp.end();
-});
-
 app.get('/fav_artists', function(req, res) {
-    res.render('fav_artists.hbs', {
-        artist: artistArray
-    });
+    db.query('SELECT * FROM artist')
+        .then(function(data) {
+            pgp.end();
+            return res.render('fav_artists.hbs', {artist: data});
+        })
+        .catch(function rejected(err) {
+          console.log('error:', err.message);
+          pgp.end();
+        });
 });
 
 app.use(express.static('public'));
